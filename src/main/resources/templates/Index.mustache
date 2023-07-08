@@ -11,18 +11,16 @@
 <body class="bg-slate-800 text-white">
 
 <div class="p-4">
-
     <div class="p-2" id="status"></div>
 
-    <div class="p-2">
-        <button onclick="powerOnStatus('on')" class="bg-green-900 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-            Start
-        </button>
-        <button onclick="powerOnStatus('off')" class="bg-red-900 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+    <div class="p-2 flex space-x-2 h-full">
+
+        <button onclick="powerOnStatus('off')"
+                class="block bg-red-900 hover:bg-red-700 text-white font-bold py-2 px-4 rounded h-full">
             Halt
         </button>
-
-        <button onclick="displayState('status')" class="bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button onclick="displayState('status')"
+                class="block bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded h-full">
             Status
         </button>
     </div>
@@ -32,6 +30,7 @@
         <label for="volume">Fan speed</label>
     </div>
 </div>
+
 
 <script src="/javascript/ui-script.js"></script>
 

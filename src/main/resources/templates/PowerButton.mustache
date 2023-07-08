@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+            {{#isStartButton}}
+                Start Button
+            {{/isStartButton}}
+            {{#isHaltButton}}
+                Halt Button
+            {{/isHaltButton}}
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/javascript/ui-script.js"></script>
+</head>
+<body>
+{{#isStartButton}}
+    <button onclick="powerOnStatus('on')"
+            class="block bg-green-900 hover:bg-green-700 w-full h-screen text-white font-bold py-2 px-4 h-full">Start
+    </button>
+{{/isStartButton}}
+{{#isHaltButton}}
+    <button onclick="powerOnStatus('off')"
+            class="block bg-red-900 hover:bg-red-700 w-full h-screen text-white font-bold py-2 px-4 h-full">Halt
+    </button>
+{{/isHaltButton}}
+</body>
+</html>
