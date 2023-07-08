@@ -1,9 +1,9 @@
 package uk.co.aaronburt.ipmi.service;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
+import uk.co.aaronburt.ipmi.properties.IpmiConfigurationProperties;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +14,13 @@ import java.util.List;
 @Slf4j
 @Service
 public class IpmiService {
+
+    private final IpmiConfigurationProperties ipmiConfig;
+
+    public IpmiService(IpmiConfigurationProperties ipmiConfig) {
+        this.ipmiConfig = ipmiConfig;
+    }
+
     public String pbExec(List<String> command) {
         try {
             ProcessBuilder pb = new ProcessBuilder(command);
@@ -35,34 +42,35 @@ public class IpmiService {
 
     public boolean setPowerStatus(String status) {
         try {
-            Dotenv dotenv = Dotenv.load();
-            List<String> ipmiCommand = ipmiCredentialsBuilder(
-                    dotenv.get("IPMITOOL_PATH"),
-                    dotenv.get("IPMI_IP_ADDRESS"),
-                    dotenv.get("IPMI_USERNAME"),
-                    dotenv.get("IPMI_PASSWORD")
-            );
-
-            ipmiCommand.addAll(Arrays.asList("power", status));
-            return pbExec(ipmiCommand).contains("Chassis Power Control: Up/On");
+            String updatedPowerStatus = executionEngine(Arrays.asList("power", status));
+            return updatedPowerStatus.contains("Chassis Power Control: Up/On");
         } catch (Exception error) {
             log.error("Something went wrong", error);
             return false;
         }
     }
 
-    public boolean getPowerStatus() {
+    public String executionEngine(List<String> ipmiArguments) {
         try {
-            Dotenv dotenv = Dotenv.load();
             List<String> ipmiCommand = ipmiCredentialsBuilder(
-                    dotenv.get("IPMITOOL_PATH"),
-                    dotenv.get("IPMI_IP_ADDRESS"),
-                    dotenv.get("IPMI_USERNAME"),
-                    dotenv.get("IPMI_PASSWORD")
+                    ipmiConfig.getPath(), ipmiConfig.getIp(), ipmiConfig.getUsername(), ipmiConfig.getPassword()
             );
 
-            ipmiCommand.addAll(Arrays.asList("power", "status"));
-            return pbExec(ipmiCommand).contains("Chassis Power is on");
+            ipmiCommand.addAll(ipmiArguments);
+            return pbExec(ipmiCommand);
+        } catch (Exception error) {
+            return "Something went wrong";
+        }
+    }
+
+    public void selClear() {
+        executionEngine(Arrays.asList("sel", "clear"));
+    }
+
+    public boolean getPowerStatus() {
+        try {
+            String status = executionEngine(Arrays.asList("power", "status"));
+            return status.contains("Chassis Power is on");
         } catch (Exception error) {
             log.error("Something went wrong", error);
             return false;
@@ -71,16 +79,7 @@ public class IpmiService {
 
     public void turnOffAutomaticFans() {
         try {
-            Dotenv dotenv = Dotenv.load();
-            List<String> ipmiCommand = ipmiCredentialsBuilder(
-                    dotenv.get("IPMITOOL_PATH"),
-                    dotenv.get("IPMI_IP_ADDRESS"),
-                    dotenv.get("IPMI_USERNAME"),
-                    dotenv.get("IPMI_PASSWORD")
-            );
-
-            ipmiCommand.addAll(Arrays.asList("raw", "0x30", "0x30", "0x01", "0x00"));
-            pbExec(ipmiCommand);
+            executionEngine(Arrays.asList("raw", "0x30", "0x30", "0x01", "0x00"));
         } catch (Exception error) {
             error.printStackTrace();
         }
@@ -88,17 +87,10 @@ public class IpmiService {
 
     public String setFanSpeed(Integer fanSpeed) {
         try {
-            Dotenv dotenv = Dotenv.load();
-            List<String> ipmiCommand = ipmiCredentialsBuilder(
-                    dotenv.get("IPMITOOL_PATH"),
-                    dotenv.get("IPMI_IP_ADDRESS"),
-                    dotenv.get("IPMI_USERNAME"),
-                    dotenv.get("IPMI_PASSWORD")
-            );
-
+            selClear();
             turnOffAutomaticFans();
-            ipmiCommand.addAll(Arrays.asList("raw", "0x30", "0x30", "0x02", "0xff", "0x" + Integer.toHexString(fanSpeed)));
-            return pbExec(ipmiCommand);
+            executionEngine(Arrays.asList("raw", "0x30", "0x30", "0x02", "0xff", "0x" + Integer.toHexString(fanSpeed)));
+            return Integer.toHexString(fanSpeed);
         } catch (Exception error) {
             error.printStackTrace();
             return "Set fan speed failed";

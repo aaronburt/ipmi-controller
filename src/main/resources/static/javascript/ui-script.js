@@ -1,6 +1,12 @@
-async function displayState(item, state){
-    document.getElementById(item).innerHTML = "Status " + await(await callStatus()).state;
+
+
+
+async function displayState(DOMe){
+    const statusObject = await callStatus();
+    document.getElementById(DOMe).innerHTML = `Online: ${statusObject.state}`;
 }
+
+
 
 async function callStatus(){
     try {

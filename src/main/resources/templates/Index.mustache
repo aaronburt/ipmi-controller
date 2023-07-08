@@ -6,19 +6,31 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-800 text-white">
 
-<div id="powerStatus">[]</div>
+<div class="p-4">
 
-<button onclick="displayState('powerStatus', '')">Status</button>
-<button onclick="powerOnStatus('on')">Start</button>
-<button onclick="powerOnStatus('off')">Halt</button>
+    <div class="p-2" id="status"></div>
 
+    <div class="p-2">
+        <button onclick="powerOnStatus('on')" class="bg-green-900 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Start
+        </button>
+        <button onclick="powerOnStatus('off')" class="bg-red-900 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+            Halt
+        </button>
 
-<div>
-    <input type="range" onchange="setFanSpeed(this.value)" min="0" value="0" max="100">
-    <label for="volume">Fan speed</label>
+        <button onclick="displayState('status')" class="bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Status
+        </button>
+    </div>
+
+    <div>
+        <input type="range" onchange="setFanSpeed(this.value)" min="0" value="0" max="100">
+        <label for="volume">Fan speed</label>
+    </div>
 </div>
 
 <script src="/javascript/ui-script.js"></script>

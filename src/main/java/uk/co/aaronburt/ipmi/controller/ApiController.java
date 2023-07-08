@@ -31,7 +31,7 @@ public class ApiController {
     @PostMapping("/power/{state}")
     public Map<String, Object> powerOn(@PathVariable String state) {
         Map<String, Object> map = new HashMap<>();
-        map.put("action", "/power/on");
+        map.put("action", "/power/" + state);
         map.put("state", service.setPowerStatus(state));
         return map;
     }
